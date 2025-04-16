@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Po-Po Monkey: Neon Nexus - Orange Overdrive // Three.js Enhanced</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Import Three.js -->
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <style>
+        /* --- ORANGE OVERDRIVE CRYPTO-TECH THEME V1.3 --- */
+        /* Refined palette for enhanced tech/crypto appeal */
+
+        @property --pulse-glow-opacity { syntax: '<number>'; initial-value: 0.3; inherits: false; }
+
+        :root {
+            /* --- Refined Crypto-Tech Palette --- */
+            /* Core Accents: Vibrant & Energetic */
+            --accent-orange: #FF8C00; /* Retained: Strong, energetic orange */
+            --accent-yellow: #FFD700; /* Retained: Gold, associated with value */
+
+            /* Highlights: Clean & Bright */
+            --highlight-glow: #FFF0B3; /* Refined: Lighter, cleaner gold/yellow for highlights */
+
+            /* Backgrounds: Deep & Techy (Less Brown) */
+            --base-dark: #0D0D12; /* Refined: Deep charcoal/near-black, more modern tech feel */
+            --medium-dark: #1A1A22; /* Refined: Dark slate/charcoal, complements base-dark */
+
+            /* Text: Crisp & Readable */
+            --light-text: #EAEAF2; /* Refined: Clean, high-contrast light grey/off-white */
+            --medium-text: #A8A8B8; /* Refined: Clear, neutral medium grey for readability */
+
+            /* Aliases for consistency */
+            --dark-bg: var(--medium-dark);
+            --darker-bg: var(--base-dark);
+
+            /* Layout & Structure (Unchanged) */
+            --container-width: 1180px; --container-padding: 18px; --grid-gap: 20px;
+            --section-padding-y: 70px; --section-padding-x: 0;
+
+            /* UI Elements - Sharp Tech (Unchanged Geometry, Updated Colors) */
+            --border-radius-organic: 8px;
+            --border-radius-tech: 0px;
+            --border-width: 1px;
+            --tech-border-orange: var(--border-width) solid rgba(var(--rgb-accent-orange), 0.45); /* Slightly increased border opacity */
+            --tech-border-yellow: var(--border-width) solid rgba(var(--rgb-accent-yellow), 0.55); /* Slightly increased border opacity */
+            --transition-fast: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-med: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+
+            /* Effects - Pulsing, Glowing (Updated Colors) */
+            --text-glow-yellow: 0 0 8px rgba(var(--rgb-accent-yellow), 0.75); /* Slightly enhanced glow */
+            --text-shadow-dark: 0 1px 2px rgba(0,0,0,0.5); /* Darker shadow for better contrast */
+            --box-shadow-pulse-orange: 0 0 15px rgba(var(--rgb-accent-orange), var(--pulse-glow-opacity)), 0 0 25px rgba(var(--rgb-accent-orange), calc(var(--pulse-glow-opacity) * 0.5));
+            --inset-shadow-dark: inset 0 0 10px rgba(0,0,0,0.6); /* Slightly deeper inset shadow */
+
+            /* RGB Colors (Updated to match new hex codes) */
+            --rgb-accent-orange: 255, 140, 0;
+            --rgb-accent-yellow: 255, 215, 0;
+            --rgb-highlight-glow: 255, 240, 179; /* Updated */
+            --rgb-base-dark: 13, 13, 18;       /* Updated */
+            --rgb-medium-dark: 26, 26, 34;     /* Updated */
+            --rgb-light-text: 234, 234, 242;   /* Updated */
+            --rgb-medium-text: 168, 168, 184;  /* Updated */
+
+            /* Font Sizes (Unchanged) */
+            --font-size-base: 15px; --font-size-sm: clamp(0.8rem, 1.3vw, 0.9rem);
+            --font-size-md: clamp(0.9rem, 1.5vw, 1rem); --font-size-lg: clamp(1.1rem, 2.5vw, 1.3rem);
+            --font-size-xl: clamp(1.5rem, 4vw, 2rem); --font-size-xxl: clamp(2rem, 5.5vw, 3.2rem);
+        }
+
+        /* --- Global Reset & Base Styles --- */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; scrollbar-width: thin; scrollbar-color: var(--accent-orange) var(--darker-bg); /* Updated track color */ }
+        ::-webkit-scrollbar { width: 7px; } ::-webkit-scrollbar-track { background: var(--darker-bg); /* Updated track color */ } ::-webkit-scrollbar-thumb { background-color: var(--accent-orange); border-radius: 7px; border: 1px solid var(--darker-bg); /* Updated border color */ box-shadow: inset 0 0 3px rgba(0,0,0,0.5); }
+
+        body {
+            font-family: 'Rajdhani', sans-serif; background-color: var(--dark-bg); color: var(--light-text); /* Updated base text color */
+            line-height: 1.65; font-size: var(--font-size-base);
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden; position: relative; background: var(--darker-bg); /* Base dark color - Updated */
+        }
+
+        /* --- Three.js Canvas Styling (Background) --- */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.65; /* Slightly increased opacity for vibrancy */
+            mix-blend-mode: screen; /* Kept blend mode */
+        }
+
+        /* --- Container & Layout (Unchanged) --- */
+        .container { width: 100%; max-width: var(--container-width); margin: 0 auto; padding: 0 var(--container-padding); }
+
+        /* --- Typography (Updated Colors) --- */
+        h1, h2, h3, h4, h5, h6 { font-family: 'Orbitron', sans-serif; font-weight: 500; line-height: 1.3; text-transform: uppercase; letter-spacing: 1px; color: var(--light-text); /* Updated */ text-shadow: var(--text-shadow-dark); margin-bottom: 1rem; }
+        h1 { font-size: var(--font-size-xxl); letter-spacing: 1.5px; color: var(--light-text); /* Updated */ text-shadow: var(--text-glow-yellow); /* Updated glow */ }
+        h2 { font-size: var(--font-size-xl); margin-bottom: 2.5rem; display: inline-block; position: relative; color: var(--accent-orange); text-shadow: 0 0 8px rgba(var(--rgb-accent-orange), 0.75); /* Enhanced glow */ }
+        h3 { font-size: var(--font-size-lg); margin-bottom: 0.8rem; color: var(--accent-yellow); text-shadow: 0 0 6px rgba(var(--rgb-accent-yellow), 0.65); /* Enhanced glow */ }
+        h4 { font-size: calc(var(--font-size-md) * 1.1); margin-bottom: 0.6rem; color: var(--accent-orange); text-shadow: 0 0 5px rgba(var(--rgb-accent-orange), 0.55); /* Enhanced glow */ }
+        h2::after { content: ''; position: absolute; bottom: -8px; left: 0; width: 65px; height: 2px; background: var(--accent-orange); transition: var(--transition-med); filter: blur(0.5px); animation: pulse-line-orange 2s infinite alternate; border-radius: 2px; }
+        @keyframes pulse-line-orange { from { filter: blur(0.5px) brightness(0.9); box-shadow: 0 0 8px rgba(var(--rgb-accent-orange), 0.6); } to { filter: blur(1px) brightness(1.2); box-shadow: 0 0 15px rgba(var(--rgb-accent-orange), 0.9); } } /* Enhanced glow */
+        h2:hover::after { width: 80px; animation-play-state: paused; background: var(--accent-yellow); box-shadow: 0 0 12px var(--accent-yellow); }
+        p { margin-bottom: 1.3rem; color: var(--medium-text); /* Updated paragraph color */ font-weight: 400; font-size: var(--font-size-md); max-width: 65ch; }
+        p:last-child { margin-bottom: 0; }
+        a { color: var(--accent-yellow); text-decoration: none; transition: var(--transition-fast); border-bottom: 1px solid rgba(var(--rgb-accent-yellow), 0.5); /* Adjusted alpha */ }
+        a:hover { color: var(--accent-orange); border-bottom-color: var(--accent-orange); background: rgba(var(--rgb-accent-orange), 0.1); }
+        strong { font-weight: 600; color: var(--accent-orange); } span { color: var(--accent-yellow); }
+
+        /* --- Header & Navigation (Updated Colors) --- */
+        .header { background: rgba(var(--rgb-base-dark), 0.85); /* Updated base color, slightly less transparent */ padding: 10px 0; position: fixed; width: 100%; top: 0; left: 0; z-index: 1000; border-bottom: var(--tech-border-orange); backdrop-filter: blur(6px); transition: var(--transition-med); will-change: background-color, padding, box-shadow; }
+        .header.scrolled { background: rgba(var(--rgb-base-dark), 0.97); /* Updated base color, more opaque */ padding: 8px 0; box-shadow: 0 0 15px rgba(var(--rgb-accent-orange), 0.25); border-bottom-color: rgba(var(--rgb-accent-orange), 0.65); }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-family: 'Orbitron', sans-serif; font-size: clamp(1.1rem, 2.8vw, 1.3rem); font-weight: 700; color: var(--light-text); /* Updated */ display: flex; align-items: center; gap: 10px; text-shadow: none; }
+        .logo i { font-size: 1.2em; color: var(--accent-yellow); animation: icon-pulse-color-orange 4s infinite ease-in-out; }
+        @keyframes icon-pulse-color-orange { 0%, 100% { color: var(--accent-yellow); transform: scale(1); } 50% { color: var(--accent-orange); transform: scale(1.05); } }
+        .nav-links { display: flex; gap: 18px; }
+        .nav-links a { color: var(--light-text); /* Updated */ background: none; padding: 5px 0; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; font-size: var(--font-size-sm); border: none; border-radius: var(--border-radius-tech); text-decoration: none; position: relative; overflow: hidden; }
+        .nav-links a::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 1.5px; background: var(--accent-yellow); transform: scaleX(0); transform-origin: center; transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1); }
+        .nav-links a:hover { color: var(--accent-orange); }
+        .nav-links a:hover::after { transform: scaleX(1); background: var(--accent-orange); }
+         .menu-toggle { display: none; background: none; border: none; color: var(--accent-yellow); font-size: 1.7rem; cursor: pointer; padding: 5px; z-index: 1100; transition: var(--transition-fast); position: relative; }
+         .menu-toggle:hover { color: var(--accent-orange); transform: rotate(90deg); }
+         .menu-toggle .fa-bars, .menu-toggle .fa-times { transition: transform 0.3s ease, opacity 0.3s ease; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+         .menu-toggle .fa-times { opacity: 0; transform: translate(-50%, -50%) rotate(180deg); }
+         .menu-toggle.active .fa-bars { opacity: 0; transform: translate(-50%, -50%) rotate(-180deg); }
+         .menu-toggle.active .fa-times { opacity: 1; transform: translate(-50%, -50%) rotate(0deg); color: var(--accent-orange); }
+
+        /* --- Hero Section (Updated Colors) --- */
+        .hero { padding: 140px var(--section-padding-x) 80px; min-height: 95vh; display: flex; align-items: center; position: relative; overflow: hidden; border-bottom: var(--tech-border-orange); background: rgba(var(--rgb-medium-dark), 0.25); /* Updated dark base */ }
+        .hero-content { display: grid; grid-template-columns: 1fr 0.9fr; align-items: center; gap: calc(var(--grid-gap) * 1.8); position: relative; z-index: 1; }
+        .hero-text h1 { color: var(--light-text); /* Updated */ text-shadow: 0 0 12px var(--accent-yellow), 0 0 24px rgba(var(--rgb-accent-yellow), 0.6); /* Enhanced glow */ }
+        .hero-text p { font-size: var(--font-size-lg); color: var(--light-text); /* Updated */ margin-bottom: 2.5rem; max-width: 60ch; background: none; padding: 0; border: none; box-shadow: none; }
+        .hero-image {
+            display: flex; justify-content: center; align-items: center; position: relative;
+            width: clamp(200px, 30vw, 300px);
+            height: clamp(200px, 30vw, 300px);
+            min-height: 200px;
+            margin: 0 auto;
+        }
+        #penguin-canvas { display: block; width: 100%; height: 100%; outline: none; }
+
+        /* --- Buttons (Orange Tech V1 - Updated Colors) --- */
+        .cta-button { padding: 10px 28px; background: linear-gradient(140deg, var(--accent-orange), var(--accent-yellow)); color: var(--base-dark); /* Updated dark text */ border: none; border-radius: var(--border-radius-tech); font-weight: 600; font-size: var(--font-size-md); text-transform: uppercase; letter-spacing: 1.2px; cursor: pointer; transition: var(--transition-med); box-shadow: var(--box-shadow-pulse-orange), var(--inset-shadow-dark); display: inline-flex; align-items: center; gap: 10px; font-family: 'Orbitron', sans-serif; position: relative; overflow: hidden; z-index: 1; will-change: transform, box-shadow; animation: button-pulse-orange 3s infinite alternate ease-in-out; }
+        @keyframes button-pulse-orange { from { --pulse-glow-opacity: 0.4; transform: scale(1); } to { --pulse-glow-opacity: 0.7; transform: scale(1.01); } } /* Enhanced pulse */
+        .cta-button span { position: relative; z-index: 1; }
+        .cta-button i { font-size: 1.1em; color: var(--medium-dark); /* Updated icon color */ transition: var(--transition-fast); transform: none; z-index: 1; }
+        .cta-button::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 50%); /* Slightly stronger sheen */ transform: rotate(30deg); transition: transform 0.5s ease; opacity: 0; z-index: 0; }
+        .cta-button::after { display: none; }
+        .cta-button .ripple { display: none; }
+        .cta-button:hover { color: var(--darker-bg); /* Updated dark text */ background: linear-gradient(140deg, var(--accent-yellow), var(--highlight-glow)); /* Updated hover gradient */ box-shadow: 0 0 20px rgba(var(--rgb-accent-yellow), 0.8), 0 0 35px rgba(var(--rgb-accent-yellow), 0.5), var(--inset-shadow-dark); animation-play-state: paused; transform: translateY(-2px) scale(1.03); }
+        .cta-button:hover::before { opacity: 1; transform: rotate(10deg) scale(1.1); }
+        .cta-button:hover i { color: var(--base-dark); /* Updated dark icon */ transform: scale(1.1); }
+        .cta-button:active { transform: translateY(1px) scale(1); box-shadow: var(--inset-shadow-dark); transition-duration: 0.1s; }
+        .cta-button:active i { transform: scale(1); }
+
+        /* --- General Section Styling (Updated Colors) --- */
+        section { padding: var(--section-padding-y) var(--section-padding-x); position: relative; overflow: hidden; border-bottom: var(--tech-border-orange); }
+        section:last-of-type { border-bottom: none; }
+        .section-alt { background: rgba(var(--rgb-medium-dark), 0.35); /* Updated dark base */ border-top: var(--tech-border-orange); border-bottom: var(--tech-border-orange); }
+
+        /* --- About Section (Updated Colors) --- */
+        #about { padding: 25px; border: var(--tech-border-yellow); box-shadow: var(--inset-shadow-dark); background: rgba(var(--rgb-medium-dark), 0.75); /* Updated dark base */ position: relative; max-width: 800px; margin: 30px auto; transform: none; border-radius: var(--border-radius-organic); }
+        #about:hover { border-color: var(--accent-orange); box-shadow: var(--inset-shadow-dark), 0 0 15px rgba(var(--rgb-accent-orange), 0.4); }
+        #about > div { position: relative; z-index: 2; } #about h2 { text-align: center; color: var(--accent-orange); text-shadow: 0 0 8px rgba(var(--rgb-accent-orange), 0.7); }
+
+        /* --- Section Headings & Descriptions (Unchanged Structure) --- */
+        #features h2, #controls h2, #tokenomics h2, #roadmap h2 { text-align: center; display: block; }
+        #features h2::after, #controls h2::after, #tokenomics h2::after, #roadmap h2::after { left: 50%; transform: translateX(-50%); }
+        #features > p, #controls > p, #tokenomics > p, #roadmap > p { text-align: center; margin-left: auto; margin-right: auto; margin-bottom: 2.5rem; color: var(--medium-text); /* Updated text color */ }
+
+        /* --- Features Section - Tech Pods (Updated Colors) --- */
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); gap: var(--grid-gap); }
+        .feature-card { background: linear-gradient(145deg, var(--medium-dark), var(--base-dark)); /* Updated gradient */ padding: 25px 20px; transition: var(--transition-med) ease; box-shadow: var(--inset-shadow-dark), 0 5px 10px rgba(0,0,0,0.35); border: var(--tech-border-orange); text-align: center; position: relative; overflow: hidden; z-index: 1; will-change: transform, box-shadow, border-color; border-radius: var(--border-radius-tech); }
+        .feature-card:hover { transform: translateY(-6px) scale(1.02); border-color: var(--accent-yellow); box-shadow: var(--inset-shadow-dark), 0 8px 20px rgba(0,0,0,0.45), var(--box-shadow-pulse-orange); }
+        .feature-card i { font-size: 2rem; color: var(--accent-yellow); margin-bottom: 1rem; display: inline-block; transition: var(--transition-med); text-shadow: var(--text-glow-yellow); }
+        .feature-card:hover i { color: var(--accent-orange); text-shadow: 0 0 10px var(--accent-orange); /* Enhanced glow */ transform: scale(1.1); }
+        .feature-card h3 { color: var(--light-text); /* Updated */ margin-bottom: 0.7rem; font-size: var(--font-size-lg); }
+        .feature-card:hover h3 { color: var(--accent-yellow); }
+        .feature-card p { color: var(--medium-text); /* Updated */ font-size: var(--font-size-sm); line-height: 1.5; }
+
+        /* --- Controls Section (Updated Colors) --- */
+        .controls-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 270px), 1fr)); gap: var(--grid-gap); }
+        .control-card { background: rgba(var(--rgb-base-dark), 0.65); /* Updated base */ padding: 20px; transition: var(--transition-med); box-shadow: var(--inset-shadow-dark); border: var(--tech-border-yellow); border-left: 3px solid var(--accent-yellow); position: relative; overflow: hidden; will-change: transform, box-shadow, border-color; border-radius: var(--border-radius-tech); }
+        .control-card:hover { transform: scale(1.01); border-color: var(--accent-yellow); border-left-color: var(--accent-orange); background: rgba(var(--rgb-base-dark), 0.75); /* Updated hover base */ box-shadow: var(--inset-shadow-dark), 0 0 15px rgba(var(--rgb-accent-yellow), 0.25); }
+        .control-card h3 { font-size: calc(var(--font-size-lg) * 1.05); margin-bottom: 1rem; color: var(--accent-yellow); display: flex; align-items: center; gap: 8px; position: relative; z-index: 1; text-shadow: 0 0 7px var(--accent-yellow); /* Enhanced */ }
+        .control-card h3 i { color: var(--accent-orange); font-size: 1.1em; animation: none; text-shadow: 0 0 6px var(--accent-orange); /* Enhanced */ }
+        .control-card ul { list-style: none; position: relative; z-index: 1; }
+        .control-card li { margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(var(--rgb-light-text), 0.15); /* Adjusted alpha */ transition: var(--transition-fast); }
+        .control-card li:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .control-card li:hover { border-bottom-color: var(--accent-orange); background-color: rgba(var(--rgb-accent-orange), 0.08); }
+        .control-card li strong { font-weight: 500; color: var(--accent-orange); text-shadow: none; flex-basis: 40%; font-size: var(--font-size-sm); }
+        .control-card li span { color: var(--accent-yellow); font-family: 'Orbitron', sans-serif; letter-spacing: 0.5px; font-weight: 400; flex-basis: 55%; text-align: right; font-size: var(--font-size-sm); }
+
+        /* --- Tokenomics Section (Updated Colors) --- */
+        .tokenomics-section { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: calc(var(--grid-gap) * 1.2); background: rgba(var(--rgb-medium-dark), 0.45); /* Updated base */ padding: 30px; position: relative; border: var(--tech-border-orange); box-shadow: var(--inset-shadow-dark); border-radius: var(--border-radius-organic); }
+        .tokenomics-chart-container { position: relative; z-index: 1; background: rgba(var(--rgb-base-dark), 0.75); /* Updated base */ border: var(--tech-border-orange); box-shadow: var(--inset-shadow-dark); display: flex; align-items: center; justify-content: center; padding: 15px; min-height: 280px; border-radius: 50%; }
+        #tokenomicsChart { max-width: 90%; max-height: 90%; filter: brightness(1.1); }
+        .tokenomics-details { position: relative; z-index: 1; background: rgba(var(--rgb-base-dark), 0.75); /* Updated base */ color: var(--accent-yellow); padding: 25px; border: var(--tech-border-orange); box-shadow: var(--inset-shadow-dark); display: flex; flex-direction: column; justify-content: center; border-radius: var(--border-radius-organic); }
+        .tokenomics-item { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid rgba(var(--rgb-light-text), 0.15); /* Adjusted alpha */ transition: background-color 0.3s ease; }
+        .tokenomics-item:hover { background-color: rgba(var(--rgb-accent-yellow), 0.1); /* Slightly stronger hover */ }
+        .tokenomics-item:last-child { border-bottom: none; }
+        .tokenomics-label { font-size: var(--font-size-md); color: var(--accent-yellow); font-weight: 400; letter-spacing: 0.5px; }
+        .tokenomics-value { font-size: calc(var(--font-size-md) * 1.1); font-weight: 600; color: var(--accent-orange); font-family: 'Orbitron', sans-serif; text-shadow: none; }
+        .total-supply { text-align: center; margin-top: 25px; background: rgba(var(--rgb-base-dark), 0.85); /* Updated base */ padding: 25px; position: relative; overflow: hidden; border: var(--tech-border-yellow); box-shadow: var(--inset-shadow-dark), 0 0 15px rgba(var(--rgb-accent-yellow),0.25); grid-column: 1 / -1; border-radius: var(--border-radius-organic); }
+        .total-supply h3 { font-size: var(--font-size-lg); margin-bottom: 0.7rem; color: var(--accent-yellow); }
+        .total-supply p { font-size: clamp(1.7rem, 4.8vw, 2.4rem); font-weight: 700; color: var(--accent-yellow); margin-bottom: 0; font-family: 'Orbitron', sans-serif; text-shadow: 0 0 10px var(--accent-yellow); /* Enhanced glow */ letter-spacing: 1.5px; }
+
+        /* --- Roadmap Section (Updated Colors) --- */
+        .roadmap-container { position: relative; padding-left: 25px; max-width: 800px; margin: 0 auto; }
+        .roadmap-line { position: absolute; left: 11px; top: 10px; bottom: 10px; width: 2px; background: linear-gradient(to bottom, var(--accent-yellow) 0%, var(--accent-orange) 100%); box-shadow: 0 0 10px rgba(var(--rgb-accent-yellow), 0.6); /* Enhanced glow */ border-radius: 1px; filter: blur(0.5px); }
+        .roadmap-item { position: relative; margin-bottom: 25px; }
+        .roadmap-item:last-child { margin-bottom: 0; }
+        .roadmarker { position: absolute; left: 0px; top: 8px; width: 24px; height: 24px; background: var(--accent-orange); border: 1px solid rgba(var(--rgb-base-dark), 0.5); /* Updated border */ border-radius: 50%; z-index: 2; box-shadow: 0 0 10px var(--accent-orange); transition: var(--transition-med); animation: cell-pulse-orange 1.8s infinite cubic-bezier(0.5, 0, 0.5, 1); }
+        @keyframes cell-pulse-orange { 0%, 100% { transform: scale(0.9); opacity: 0.8; background: var(--accent-orange); box-shadow: 0 0 10px var(--accent-orange); } 50% { transform: scale(1.1); opacity: 1; background: var(--accent-yellow); box-shadow: 0 0 14px var(--accent-yellow); } } /* Enhanced pulse */
+        .roadmap-item:hover .roadmarker { animation-play-state: paused; background: var(--highlight-glow); /* Updated hover color */ box-shadow: 0 0 15px var(--highlight-glow); transform: scale(1.15); border-color: var(--accent-orange); }
+        .roadmap-card { background: rgba(var(--rgb-medium-dark), 0.75); /* Updated base */ padding: 18px; box-shadow: var(--inset-shadow-dark); margin-left: 35px; transition: var(--transition-med); position: relative; border: var(--tech-border-orange); z-index: 1; will-change: transform, box-shadow, border-color; border-radius: var(--border-radius-organic); }
+        .roadmap-card:hover { border-color: var(--accent-yellow); background: rgba(var(--rgb-medium-dark), 0.85); /* Updated hover base */ box-shadow: var(--inset-shadow-dark), 0 0 15px rgba(var(--rgb-accent-yellow), 0.3); transform: scale(1.01); }
+        .roadmap-date { font-size: var(--font-size-sm); color: var(--accent-orange); font-weight: 600; margin-bottom: 0.4rem; display: block; text-shadow: none; }
+        .roadmap-title { font-size: var(--font-size-lg); color: var(--light-text); /* Updated */ margin-bottom: 0.6rem; }
+        .roadmap-card:hover .roadmap-title { color: var(--accent-yellow); }
+        .roadmap-desc { font-size: var(--font-size-sm); color: var(--medium-text); /* Updated */ line-height: 1.55; }
+
+        /* --- Footer (Updated Colors) --- */
+        footer { background: linear-gradient(170deg, var(--base-dark) 20%, var(--medium-dark) 90%); /* Updated gradient bases */ padding: 60px var(--section-padding-x) 35px; color: var(--light-text); /* Updated */ position: relative; overflow: hidden; border-top: 1px solid rgba(var(--rgb-accent-yellow), 0.35); /* Adjusted alpha */ box-shadow: inset 0 5px 15px rgba(0,0,0,0.45); }
+        .footer-content { position: relative; z-index: 1; text-align: center; }
+        .footer-logo { font-family: 'Orbitron', sans-serif; font-size: clamp(1.6rem, 5vw, 2.1rem); font-weight: 700; color: var(--light-text); /* Updated */ margin-bottom: 1.5rem; display: inline-flex; align-items: center; gap: 10px; text-shadow: none; }
+        .footer-logo i { font-size: 1.1em; color: var(--accent-yellow); animation: icon-pulse-color-orange 4s infinite ease-in-out reverse; }
+        .social-links { display: flex; justify-content: center; gap: 18px; margin-bottom: 1.8rem; }
+        .social-link { width: 38px; height: 38px; background: rgba(var(--rgb-light-text), 0.08); /* Adjusted alpha */ border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--accent-yellow); font-size: 1rem; transition: var(--transition-fast); border: 1px solid rgba(var(--rgb-accent-yellow), 0.25); /* Adjusted alpha */ box-shadow: var(--inset-shadow-dark); }
+        .social-link:hover { background: var(--accent-orange); border-color: var(--accent-orange); box-shadow: 0 0 12px var(--accent-orange); transform: scale(1.08); }
+        .social-link:hover i { color: var(--darker-bg); /* Updated dark icon color */ transform: rotate(10deg); }
+        .copyright { font-size: var(--font-size-sm); color: var(--medium-text); /* Updated */ opacity: 0.85; letter-spacing: 0.5px; font-weight: 500; }
+
+        /* --- Glitch Effect (Uses Accent Colors - No change needed here) --- */
+        .glitch { position: relative; }
+        .glitch[data-text]::before, .glitch[data-text]::after { content: attr(data-text); position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: transparent; overflow: hidden; clip-path: inset(50% 0 50% 0); animation: tech-glitch 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite; }
+        .glitch[data-text]::before { left: -1px; text-shadow: 1px 0 var(--accent-orange); animation-duration: 2.2s; animation-delay: -0.4s; }
+        .glitch[data-text]::after { left: 1px; text-shadow: -1px 0 var(--accent-yellow); animation-duration: 1.8s; animation-delay: -0.2s; }
+        .logo:not(:hover) .glitch::before, .logo:not(:hover) .glitch::after,
+        .footer-logo:not(:hover) .glitch::before, .footer-logo:not(:hover) .glitch::after { animation: none; opacity: 0; }
+        @keyframes tech-glitch { 0%, 100% { clip-path: inset(45% 0 45% 0); transform: translate(0, 0) skew(0); } 15% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px) skew(-0.5deg); } 30% { clip-path: inset(75% 0 5% 0); transform: translate(1px, -1px) skew(0.3deg); } 45% { clip-path: inset(5% 0 80% 0); transform: translate(1px, 1px) skew(-0.2deg); } 60% { clip-path: inset(40% 0 40% 0); transform: translate(-1px, -1px) skew(0.4deg); } 75% { clip-path: inset(60% 0 20% 0); transform: translate(1px, -1px) skew(-0.1deg); } 90% { clip-path: inset(20% 0 60% 0); transform: translate(-1px, 1px) skew(0.2deg); } }
+
+        /* --- Animations & Transitions (Unchanged) --- */
+        .fade-in { opacity: 0; transform: translateY(15px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; transition-delay: var(--stagger-delay, 0s); will-change: opacity, transform; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* --- Responsive Design (Unchanged Structure, Inherits New Colors) --- */
+        @media (min-width: 992px) { .features-grid, .controls-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1024px) and (min-width: 992px) { .features-grid, .controls-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 1024px) { :root { --section-padding-y: 60px; --grid-gap: 16px; } .hero-content { grid-template-columns: 1fr; text-align: center; gap: 30px; } .hero-text { order: 2; } .hero-image { order: 1; margin-bottom: 25px; width: clamp(200px, 40vw, 260px); height: clamp(200px, 40vw, 260px); } .tokenomics-section { grid-template-columns: 1fr; padding: 25px; } .total-supply { padding: 20px; } .roadmap-container { padding-left: 18px; } .roadmap-card { margin-left: 28px; } .roadmarker { left: -2px; } .features-grid, .controls-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr)); } }
+        @media (max-width: 768px) { :root { --container-padding: 15px; --section-padding-y: 45px; --font-size-base: 14px; } .header { padding: 8px 0; } .header.scrolled { padding: 7px 0; } .nav-links { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100vh; /* Mobile menu background */ background: rgba(var(--rgb-base-dark), 0.99); /* Updated base */ flex-direction: column; justify-content: center; align-items: center; padding: 30px var(--container-padding); opacity: 0; visibility: hidden; transform: translateY(-15px); transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease; z-index: 1050; } .nav-links.show { display: flex; opacity: 1; visibility: visible; transform: translateY(0); } .nav-links a { font-size: 1.3rem; margin-bottom: 20px; padding: 8px 0; width: 80%; text-align: center; } .menu-toggle { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; font-size: 1.5rem; } .hero { padding: 110px var(--section-padding-x) 50px; } .hero-content { grid-template-columns: 1fr; } .hero-text p { font-size: var(--font-size-md); } .hero-image { width: clamp(180px, 50vw, 220px); height: clamp(180px, 50vw, 220px); } .features-grid, .controls-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); } .tokenomics-section { padding: 18px; } .tokenomics-item { padding: 10px 0; } #about { padding: 18px; margin: 25px auto; } .footer { padding: 50px var(--section-padding-x) 30px; } .social-link { width: 36px; height: 36px; font-size: 0.9rem; } }
+        @media (max-width: 480px) { :root { --container-padding: 12px; --section-padding-y: 35px; --grid-gap: 12px; --font-size-base: 13px; } body { line-height: 1.5; } h1 { font-size: 1.5rem; letter-spacing: 1px; } h2 { font-size: 1.3rem; margin-bottom: 1.5rem; } h2::after { width: 50px; height: 2px; bottom: -6px; } h3 { font-size: 1.1rem; } .hero { padding: 90px var(--section-padding-x) 40px; } .hero-text p { font-size: var(--font-size-sm); } .hero-image { width: clamp(150px, 55vw, 180px); height: clamp(150px, 55vw, 180px); } .cta-button { padding: 9px 20px; font-size: var(--font-size-sm); letter-spacing: 1px; gap: 6px;} .cta-button i { font-size: 1em; } .feature-card, .control-card, .tokenomics-chart-container, .tokenomics-details, .roadmap-card { padding: 15px; } #about { padding: 15px; } .tokenomics-section { padding: 15px; gap: var(--grid-gap); } .tokenomics-chart-container { min-height: 220px; } .tokenomics-label, .tokenomics-value { font-size: var(--font-size-sm); } .total-supply { padding: 15px; margin-top: 20px; } .total-supply h3 { font-size: 1rem; } .total-supply p { font-size: 1.5rem; } .roadmap-container { padding-left: 15px; } .roadmap-card { margin-left: 25px; } .roadmarker { left: 1px; width: 20px; height: 20px; } .footer { padding: 40px var(--section-padding-x) 25px; } .footer-logo { font-size: 1.5rem; gap: 8px;} .social-links { gap: 12px; margin-bottom: 1.2rem; } .social-link { width: 30px; height: 30px; font-size: 0.8rem; } .copyright { font-size: calc(var(--font-size-sm) * 0.95); } }
+        @media (max-width: 360px) { :root { --container-padding: 10px; --section-padding-y: 30px; } .features-grid, .controls-grid { grid-template-columns: 1fr; } .control-card li { flex-direction: column; align-items: flex-start; gap: 2px; } .control-card li span { text-align: left; } }
+
+    </style>
+</head>
+<body>
+    <!-- Three.js Background Canvas -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo" aria-label="Po-Po Monkey Home">
+                    <i class="fas fa-robot"></i>
+                    <span class="logo-text"><span class="glitch" data-text="Po-Po Monkey">Po-Po Monkey</span></span>
+                </a>
+                <nav class="nav-links">
+                    <a href="#about">About</a>
+                    <a href="#features">Features</a>
+                    <a href="#controls">Controls</a>
+                    <a href="#tokenomics">Tokenomics</a>
+                    <a href="#roadmap">Roadmap</a>
+                </nav>
+                <button class="menu-toggle" aria-label="Toggle menu" aria-expanded="false">
+                     <i class="fas fa-bars"></i>
+                     <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text">
+                        <h1 class="fade-in">Po-Po Monkey: Neon Nexus</h1>
+                        <p class="fade-in" style="--stagger-delay: 0.1s;">Navigate digital labyrinths, outsmart cyber opponents, and collect data nodes in this dynamic cyberpunk maze game with ever-changing controls. Experience the thrill of the neon-lit future in a whole new way.</p>
+                        <button class="cta-button fade-in" style="--stagger-delay: 0.2s;">
+                            <i class="fas fa-download"></i><span>Download Now</span>
+                        </button>
+                    </div>
+                    <div class="hero-image fade-in" style="--stagger-delay: 0.1s;">
+                        <!-- Canvas for the 3D Penguin -->
+                        <canvas id="penguin-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="section-alt" id="about-wrapper">
+            <div class="container">
+                 <div id="about" class="fade-in">
+                    <div>
+                        <h2>About The Game</h2>
+                        <p>Po-Po Monkey: Neon Nexus is an innovative cyberpunk maze game where players guide augmented penguins through intricate digital labyrinths to collect data nodes while navigating dynamic control schemes that change during gameplay.</p>
+                        <p>Set in beautifully rendered neon-drenched environments (now with an orange overdrive!), the game challenges players to adapt quickly as control configurations shift between six different modes. Whether playing against AI opponents or competing in multiplayer matches, each game offers a fresh strategic challenge.</p>
+                        <p>Customize your cyber-penguin with unlockable skins and cyberware, climb leaderboards in competitive tournaments, and earn in-game crypto tokens that can be used for upgrades or trading on the blockchain.</p>
+                    </div>
+                 </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features">
+            <div class="container">
+                <h2 class="fade-in">Game Features</h2>
+                <p class="fade-in" style="--stagger-delay: 0.1s;">Discover the exciting features that make Po-Po Monkey: Neon Nexus a unique cyberpunk gaming experience.</p>
+                <div class="features-grid">
+                    <div class="feature-card fade-in" style="--stagger-delay: 0.2s;"> <i class="fas fa-gamepad"></i> <h3>Dynamic Controls</h3> <p>Six distinct control schemes that change during gameplay, keeping you on your toes and testing your adaptability in the digital realm.</p> </div>
+                    <div class="feature-card fade-in" style="--stagger-delay: 0.25s;"> <i class="fas fa-users"></i> <h3>Multiplayer Modes</h3> <p>Compete against AI opponents or challenge friends in exciting PvP matches with global leaderboards on the blockchain.</p> </div>
+                    <div class="feature-card fade-in" style="--stagger-delay: 0.3s;"> <i class="fas fa-paint-brush"></i> <h3>Cyber Customization</h3> <p>Unlock and collect unique cyber-penguin skins, cyberware implants, and neon animations to personalize your digital avatar.</p> </div>
+                    <div class="feature-card fade-in" style="--stagger-delay: 0.35s;"> <i class="fas fa-trophy"></i> <h3>Competitive Play</h3> <p>Participate in ranked matches, cyber-tournaments, and special events with valuable crypto rewards.</p> </div>
+                    <div class="feature-card fade-in" style="--stagger-delay: 0.4s;"> <i class="fas fa-coins"></i> <h3>Crypto Economy</h3> <p>Earn in-game crypto tokens through skillful play, which can be used for upgrades or traded on decentralized exchanges.</p> </div>
+                    <div class="feature-card fade-in" style="--stagger-delay: 0.45s;"> <i class="fas fa-city"></i> <h3>Neon Environments</h3> <p>Explore beautifully designed cyberpunk mazes (now glowing orange!) with interactive digital elements and dynamic obstacles.</p> </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Controls Section -->
+        <section class="section-alt" id="controls">
+            <div class="container">
+                <h2 class="fade-in">Control Schemes</h2>
+                <p class="fade-in" style="--stagger-delay: 0.1s;">Master six different cybernetic control configurations that change during gameplay. Adapt quickly to maintain your advantage in the digital maze!</p>
+                <div class="controls-grid">
+                    <div class="control-card fade-in" style="--stagger-delay: 0.2s;"> <h3><i class="fas fa-gem"></i> Diamond</h3> <ul> <li><strong>UP:</strong> <span>Up</span></li> <li><strong>DOWN:</strong> <span>Down</span></li> <li><strong>LEFT:</strong> <span>Left</span></li> <li><strong>RIGHT:</strong> <span>Right</span></li> </ul> </div>
+                    <div class="control-card fade-in" style="--stagger-delay: 0.25s;"> <h3><i class="fas fa-play"></i> Triangle</h3> <ul> <li><strong>UP:</strong> <span>Down</span></li> <li><strong>DOWN:</strong> <span>Up</span></li> <li><strong>LEFT:</strong> <span>Left</span></li> <li><strong>RIGHT:</strong> <span>Right</span></li> </ul> </div>
+                    <div class="control-card fade-in" style="--stagger-delay: 0.3s;"> <h3><i class="fas fa-square"></i> Rectangle</h3> <ul> <li><strong>UP:</strong> <span>Up</span></li> <li><strong>DOWN:</strong> <span>Down</span></li> <li><strong>LEFT:</strong> <span>Right</span></li> <li><strong>RIGHT:</strong> <span>Left</span></li> </ul> </div>
+                    <div class="control-card fade-in" style="--stagger-delay: 0.35s;"> <h3><i class="fas fa-star"></i> Star</h3> <ul> <li><strong>UP:</strong> <span>Left</span></li> <li><strong>DOWN:</strong> <span>Right</span></li> <li><strong>LEFT:</strong> <span>Up</span></li> <li><strong>RIGHT:</strong> <span>Down</span></li> </ul> </div>
+                    <div class="control-card fade-in" style="--stagger-delay: 0.4s;"> <h3><i class="fas fa-circle"></i> Circle</h3> <ul> <li><strong>UP:</strong> <span>Down</span></li> <li><strong>DOWN:</strong> <span>Up</span></li> <li><strong>LEFT:</strong> <span>Right</span></li> <li><strong>RIGHT:</strong> <span>Left</span></li> </ul> </div>
+                    <div class="control-card fade-in" style="--stagger-delay: 0.45s;"> <h3><i class="fas fa-dharmachakra"></i> Pentagon</h3> <ul> <li><strong>UP:</strong> <span>Right</span></li> <li><strong>DOWN:</strong> <span>Left</span></li> <li><strong>LEFT:</strong> <span>Down</span></li> <li><strong>RIGHT:</strong> <span>Up</span></li> </ul> </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tokenomics Section -->
+        <section id="tokenomics">
+            <div class="container">
+                <h2 class="fade-in">Tokenomics</h2>
+                <p class="fade-in" style="--stagger-delay: 0.1s;">Our transparent token distribution ensures fair play and sustainable growth for the Po-Po Monkey crypto ecosystem.</p>
+                <div class="tokenomics-section fade-in" style="--stagger-delay: 0.2s;">
+                    <div class="tokenomics-chart-container"> <canvas id="tokenomicsChart"></canvas> </div>
+                    <div class="tokenomics-details">
+                        <div class="tokenomics-item"> <span class="tokenomics-label">Fair Launch Distribution</span> <span class="tokenomics-value">60% (6B)</span> </div>
+                        <div class="tokenomics-item"> <span class="tokenomics-label">Liquidity Pool</span> <span class="tokenomics-value">30% (3B)</span> </div>
+                        <div class="tokenomics-item"> <span class="tokenomics-label">Development Team</span> <span class="tokenomics-value">5% (500M)</span> </div>
+                        <div class="tokenomics-item"> <span class="tokenomics-label">Marketing & Growth</span> <span class="tokenomics-value">5% (500M)</span> </div>
+                    </div>
+                     <div class="total-supply fade-in" style="--stagger-delay: 0.3s;"> <h3>Total Token Supply</h3> <p>10,000,000,000</p> </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Section -->
+        <section class="section-alt" id="roadmap">
+            <div class="container">
+                <h2 class="fade-in">Development Roadmap</h2>
+                <p class="fade-in" style="--stagger-delay: 0.1s;">Our journey to create the ultimate cyberpunk gaming experience, with exciting milestones ahead.</p>
+                <div class="roadmap-container">
+                    <div class="roadmap-line fade-in" style="--stagger-delay: 0.2s;"></div>
+                    <div class="roadmap-item fade-in" style="--stagger-delay: 0.3s;"> <div class="roadmarker"></div> <div class="roadmap-card"> <span class="roadmap-date">Q1 2025</span> <h4 class="roadmap-title">Game Launch</h4> <p class="roadmap-desc"> Official release of Po-Po Monkey: Neon Nexus with all core gameplay features, including dynamic controls, multiplayer modes, and the initial token distribution system on the blockchain. </p> </div> </div>
+                    <div class="roadmap-item fade-in" style="--stagger-delay: 0.45s;"> <div class="roadmarker"></div> <div class="roadmap-card"> <span class="roadmap-date">Q2 2025</span> <h4 class="roadmap-title">Community Expansion</h4> <p class="roadmap-desc"> Introduction of competitive cyber-tournaments, social features, and the first major content update with new neon environments and cyber-penguin customization options. </p> </div> </div>
+                    <div class="roadmap-item fade-in" style="--stagger-delay: 0.6s;"> <div class="roadmarker"></div> <div class="roadmap-card"> <span class="roadmap-date">Q3 2025</span> <h4 class="roadmap-title">Mobile Release</h4> <p class="roadmap-desc"> Launch of iOS and Android versions with full cross-platform play support, optimized touch controls, and mobile-exclusive cyber-events. </p> </div> </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo fade-in"> <i class="fas fa-robot"></i> <span class="logo-text"><span class="glitch" data-text="Po-Po Monkey">Po-Po Monkey</span></span> </div>
+                <div class="social-links fade-in" style="--stagger-delay: 0.1s;">
+                    <a href="#" class="social-link" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link" aria-label="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="#" class="social-link" aria-label="Telegram"><i class="fab fa-telegram"></i></a>
+                    <a href="#" class="social-link" aria-label="Medium"><i class="fab fa-medium"></i></a>
+                </div>
+                <p class="copyright fade-in" style="--stagger-delay: 0.2s;">&copy; 2025 Po-Po Monkey: Neon Nexus. All rights reserved. <span style="color:var(--accent-orange)">// SYSCORE VERIFIED</span></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Original Site Script -->
+    <script>
+        // Handles header scroll, menu toggle, smooth scroll, chart init, fade-in animations
+        document.addEventListener("DOMContentLoaded", () => {
+            const style = getComputedStyle(document.documentElement);
+            const header = document.querySelector('.header');
+            let lastScrollTop = 0;
+            const scrollThreshold = 50;
+
+            function handleScroll() {
+                let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                header.classList.toggle('scrolled', scrollTop > scrollThreshold);
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            }
+            let scrollTimeout;
+            window.addEventListener('scroll', () => {
+                clearTimeout(scrollTimeout);
+                scrollTimeout = setTimeout(handleScroll, 5);
+            }, { passive: true });
+
+            const menuToggle = document.querySelector('.menu-toggle');
+            const navLinks = document.querySelector('.nav-links');
+            if (menuToggle && navLinks) {
+                 const toggleMenu = () => {
+                    const isActive = navLinks.classList.toggle('show');
+                    menuToggle.classList.toggle('active', isActive);
+                    menuToggle.setAttribute('aria-expanded', isActive);
+                 };
+                 menuToggle.addEventListener('click', toggleMenu);
+                 navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', () => { if (navLinks.classList.contains('show')) { toggleMenu(); } });
+                });
+                 document.addEventListener('click', (event) => {
+                    if (!navLinks.contains(event.target) && !menuToggle.contains(event.target) && navLinks.classList.contains('show')) { toggleMenu(); }
+                 });
+            }
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#' || !document.querySelector(href)) return;
+                    e.preventDefault();
+                    const targetElement = document.querySelector(href);
+                    if (targetElement) {
+                        const headerOffset = header ? header.offsetHeight + 10 : 70;
+                        const elementPosition = targetElement.getBoundingClientRect().top;
+                        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            const ctx = document.getElementById('tokenomicsChart');
+            if (ctx && typeof Chart !== 'undefined') {
+                // Define getColor function locally to use the updated style object
+                const getColor = (varName) => style.getPropertyValue(varName).trim();
+
+                new Chart(ctx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Fair Launch', 'Liquidity Pool', 'Team', 'Marketing'],
+                        datasets: [{
+                            data: [60, 30, 5, 5],
+                            backgroundColor: [
+                                getColor('--accent-orange'),  // Updated color reference
+                                getColor('--accent-yellow'),  // Updated color reference
+                                getColor('--medium-text'),    // Updated color reference
+                                getColor('--highlight-glow') // Updated color reference
+                            ],
+                            borderColor: getColor('--darker-bg'), // Updated color reference
+                            borderWidth: 2, hoverBorderColor: getColor('--light-text'), hoverOffset: 8, borderRadius: 5, spacing: 3
+                        }]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false, cutout: '75%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                enabled: true,
+                                backgroundColor: 'rgba(var(--rgb-base-dark), 0.9)', // Use new base dark RGBA
+                                titleColor: getColor('--accent-yellow'), // Updated color reference
+                                bodyColor: getColor('--light-text'),     // Updated color reference
+                                titleFont: { family: 'Orbitron', size: 11, weight: 'bold' },
+                                bodyFont: { family: 'Rajdhani', size: 10 },
+                                padding: 8, cornerRadius: 5,
+                                borderColor: getColor('--accent-yellow'), // Updated color reference
+                                borderWidth: 1, displayColors: false,
+                                callbacks: { label: function(context) { const total = context.dataset.data.reduce((a, b) => a + b, 0); const value = context.raw; const percentage = ((value / total) * 100).toFixed(0); const billionValue = (value / 100 * 10).toFixed(1); return `${context.label}: ${percentage}% (${billionValue}B)`; } }
+                            }
+                        },
+                        animation: { animateRotate: true, animateScale: false, duration: 1600, easing: 'easeInOutQuart' }
+                    }
+                });
+            } else if (!ctx) { console.error("Canvas element for chart not found"); } else { console.error("Chart.js not loaded"); }
+
+            const fadeElements = document.querySelectorAll('.fade-in');
+            if ("IntersectionObserver" in window) {
+                const observerOptions = { root: null, rootMargin: '0px 0px -10% 0px', threshold: 0.05 };
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } });
+                }, observerOptions);
+                fadeElements.forEach(el => { observer.observe(el); });
+            } else { console.warn("Intersection Observer not supported, fade-in animations disabled."); fadeElements.forEach(el => el.classList.add('visible')); }
+
+             const logoTextSpan = document.querySelector('.logo-text .glitch');
+             if (logoTextSpan && !logoTextSpan.hasAttribute('data-text')) {
+                 logoTextSpan.setAttribute('data-text', logoTextSpan.textContent);
+             }
+             const footerLogoTextSpan = document.querySelector('.footer-logo .glitch');
+             if (footerLogoTextSpan && !footerLogoTextSpan.hasAttribute('data-text')) {
+                 footerLogoTextSpan.setAttribute('data-text', footerLogoTextSpan.textContent);
+             }
+        });
+    </script>
+
+    <!-- Three.js Background Script -->
+    <script type="module">
+        // Handles the background particle animation
+        import * as THREE from 'three';
+
+        let scene, camera, renderer;
+        let particles, geometry, material;
+        let mouseX = 0, mouseY = 0;
+        let windowHalfX = window.innerWidth / 2;
+        let windowHalfY = window.innerHeight / 2;
+
+        const particleCount = 5000;
+        const particleSpeed = 0.005;
+        const mouseInfluence = 0.00008;
+
+        const canvas = document.getElementById('bg-canvas');
+
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
+            camera.position.z = 1000;
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+
+            geometry = new THREE.BufferGeometry();
+            const positions = [];
+            const colors = [];
+            // Get updated colors from CSS
+            const style = getComputedStyle(document.documentElement);
+            const colorOrange = new THREE.Color(style.getPropertyValue('--accent-orange').trim());
+            const colorYellow = new THREE.Color(style.getPropertyValue('--accent-yellow').trim());
+            const colorHighlight = new THREE.Color(style.getPropertyValue('--highlight-glow').trim()); // Use updated highlight
+            const themeColors = [colorOrange, colorYellow, colorHighlight];
+
+            for (let i = 0; i < particleCount; i++) {
+                const x = Math.random() * 2000 - 1000;
+                const y = Math.random() * 2000 - 1000;
+                const z = Math.random() * 2000 - 1000;
+                positions.push(x, y, z);
+                const color = themeColors[Math.floor(Math.random() * themeColors.length)];
+                colors.push(color.r, color.g, color.b);
+            }
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+            material = new THREE.PointsMaterial({
+                size: 2.5, vertexColors: true, blending: THREE.AdditiveBlending,
+                transparent: true, opacity: 0.75, // Slightly increased opacity
+                depthWrite: false
+            });
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            document.addEventListener('mousemove', onDocumentMouseMove, { passive: true });
+            window.addEventListener('resize', onWindowResize, { passive: true });
+        }
+
+        function onWindowResize() {
+            windowHalfX = window.innerWidth / 2;
+            windowHalfY = window.innerHeight / 2;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = event.clientX - windowHalfX;
+            mouseY = event.clientY - windowHalfY;
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            render();
+        }
+
+        function render() {
+            camera.position.x += (mouseX * mouseInfluence - camera.position.x) * 0.02;
+            camera.position.y += (-mouseY * mouseInfluence - camera.position.y) * 0.02;
+            camera.lookAt(scene.position);
+
+            const positions = geometry.attributes.position.array;
+            for (let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                positions[i3 + 1] += particleSpeed * 100;
+                if (positions[i3 + 1] > 1000) positions[i3 + 1] = -1000;
+            }
+            geometry.attributes.position.needsUpdate = true;
+            renderer.render(scene, camera);
+        }
+
+        if (typeof WebGLRenderingContext !== 'undefined') { init(); animate(); }
+        else { console.warn('WebGL not supported. 3D background disabled.'); if (canvas) canvas.style.display = 'none'; }
+    </script>
+
+    <!-- Three.js 3D Penguin Script (Uses Updated CSS Colors) -->
+    <script type="module">
+        import * as THREE from 'three';
+        // import { OrbitControls } from 'three/addons/controls/OrbitControls.js'; // Optional: for debugging
+
+        let penguinScene, penguinCamera, penguinRenderer, penguinGroup;
+        let penguinCanvas, container;
+        const clock = new THREE.Clock();
+
+        function initPenguin() {
+            penguinCanvas = document.getElementById('penguin-canvas');
+            container = penguinCanvas.parentElement; // Get the .hero-image div
+
+            if (!penguinCanvas || !container) {
+                console.error("Penguin canvas or container not found!");
+                return;
+            }
+
+            // Scene
+            penguinScene = new THREE.Scene();
+
+            // Camera
+            const aspect = container.clientWidth / container.clientHeight;
+            penguinCamera = new THREE.PerspectiveCamera(50, aspect, 0.1, 100);
+            penguinCamera.position.set(0, 1.5, 6);
+            penguinCamera.lookAt(0, 0.5, 0);
+
+            // Renderer
+            penguinRenderer = new THREE.WebGLRenderer({ canvas: penguinCanvas, alpha: true, antialias: true });
+            penguinRenderer.setPixelRatio(window.devicePixelRatio);
+            penguinRenderer.setSize(container.clientWidth, container.clientHeight);
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.95); // Slightly brighter ambient
+            penguinScene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.7); // Slightly brighter directional
+            directionalLight.position.set(5, 10, 7);
+            penguinScene.add(directionalLight);
+
+            // --- Build Penguin Model ---
+            penguinGroup = new THREE.Group();
+            penguinScene.add(penguinGroup);
+
+            // Get Updated Colors from CSS
+            const style = getComputedStyle(document.documentElement);
+            const bodyColor = new THREE.Color(style.getPropertyValue('--accent-orange').trim()); // Orange body
+            const bellyColor = new THREE.Color(style.getPropertyValue('--accent-yellow').trim()); // Yellow belly
+            const beakColor = new THREE.Color(style.getPropertyValue('--accent-yellow').trim()); // Yellow beak
+            const eyeColor = new THREE.Color(style.getPropertyValue('--base-dark').trim()); // Use new deep charcoal for eyes
+
+             // Materials (Using MeshStandardMaterial)
+            const bodyMaterial = new THREE.MeshStandardMaterial({ color: bodyColor, roughness: 0.5, metalness: 0.1 });
+            const bellyMaterial = new THREE.MeshStandardMaterial({ color: bellyColor, roughness: 0.7, metalness: 0.0 });
+            const beakMaterial = new THREE.MeshStandardMaterial({ color: beakColor, roughness: 0.6, metalness: 0.05 });
+            const eyeMaterial = new THREE.MeshStandardMaterial({ color: eyeColor, roughness: 0.3, metalness: 0.0 }); // Use updated eye color
+
+            // Body (Using Capsule Geometry)
+            const bodyRadius = 1;
+            const bodyLength = 1.5;
+            const bodyGeometry = new THREE.CapsuleGeometry(bodyRadius, bodyLength, 8, 16);
+            const bodyMesh = new THREE.Mesh(bodyGeometry, bodyMaterial);
+            bodyMesh.scale.set(1, 1.1, 0.9);
+            bodyMesh.position.y = (bodyLength / 2) + bodyRadius * 1.1;
+            penguinGroup.add(bodyMesh);
+
+             // Belly (Flattened sphere)
+             const bellyRadius = bodyRadius * 0.8;
+             const bellyGeometry = new THREE.SphereGeometry(bellyRadius, 16, 8);
+             const bellyMesh = new THREE.Mesh(bellyGeometry, bellyMaterial);
+             bellyMesh.scale.set(0.8, 1, 0.3);
+             bellyMesh.position.set(0, bodyMesh.position.y * 0.9, bodyRadius * 0.8);
+             penguinGroup.add(bellyMesh);
+
+            // Eyes (Simple spheres)
+            const eyeRadius = 0.15;
+            const eyeGeometry = new THREE.SphereGeometry(eyeRadius, 8, 8);
+            const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial); // Use updated eye material
+            const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial); // Use updated eye material
+            leftEye.position.set(-bodyRadius * 0.4, bodyMesh.position.y * 1.2, bodyRadius * 0.75);
+            rightEye.position.set(bodyRadius * 0.4, bodyMesh.position.y * 1.2, bodyRadius * 0.75);
+            penguinGroup.add(leftEye);
+            penguinGroup.add(rightEye);
+
+            // Beak (Cone)
+            const beakRadius = 0.2;
+            const beakHeight = 0.4;
+            const beakGeometry = new THREE.ConeGeometry(beakRadius, beakHeight, 8);
+            const beakMesh = new THREE.Mesh(beakGeometry, beakMaterial);
+            beakMesh.position.set(0, bodyMesh.position.y * 1.1, bodyRadius * 0.85);
+            beakMesh.rotation.x = Math.PI / 2;
+            penguinGroup.add(beakMesh);
+
+            // Wings (Simple capsules)
+            const wingRadius = 0.2;
+            const wingLength = 1.2;
+            const wingGeometry = new THREE.CapsuleGeometry(wingRadius, wingLength, 4, 8);
+            const leftWing = new THREE.Mesh(wingGeometry, bodyMaterial); // Use body material
+            const rightWing = new THREE.Mesh(wingGeometry, bodyMaterial); // Use body material
+            leftWing.scale.y = 0.8;
+            rightWing.scale.y = 0.8;
+            leftWing.position.set(-bodyRadius * 0.9, bodyMesh.position.y * 0.8, 0);
+            rightWing.position.set(bodyRadius * 0.9, bodyMesh.position.y * 0.8, 0);
+            leftWing.rotation.z = Math.PI / 6;
+            rightWing.rotation.z = -Math.PI / 6;
+            penguinGroup.add(leftWing);
+            penguinGroup.add(rightWing);
+
+            // Adjust group position
+            penguinGroup.position.y = - (bodyMesh.position.y * 0.5);
+
+            // Resize Listener
+            window.addEventListener('resize', onPenguinWindowResize, { passive: true });
+        }
+
+        function onPenguinWindowResize() {
+            if (!container || !penguinCamera || !penguinRenderer) return;
+            const width = container.clientWidth;
+            const height = container.clientHeight;
+            penguinCamera.aspect = width / height;
+            penguinCamera.updateProjectionMatrix();
+            penguinRenderer.setSize(width, height);
+        }
+
+        function animatePenguin() {
+            if (!penguinRenderer) return;
+            requestAnimationFrame(animatePenguin);
+            const elapsedTime = clock.getElapsedTime();
+
+            // Animation
+            const baseGroupY = - (1.5 / 2 + 1 * 1.1) * 0.5; // Recalculate base Y pos just in case
+            penguinGroup.position.y = baseGroupY + Math.sin(elapsedTime * 1.5) * 0.15;
+            penguinGroup.rotation.y = Math.sin(elapsedTime * 0.8) * 0.2;
+            penguinGroup.rotation.z = Math.sin(elapsedTime * 1.1) * 0.05;
+
+            penguinRenderer.render(penguinScene, penguinCamera);
+        }
+
+         document.addEventListener('DOMContentLoaded', () => {
+            if (typeof WebGLRenderingContext !== 'undefined') {
+                 try { initPenguin(); animatePenguin(); }
+                 catch(e) {
+                    console.error("Error initializing 3D penguin:", e);
+                     const penguinCanvasElement = document.getElementById('penguin-canvas');
+                     if(penguinCanvasElement) penguinCanvasElement.style.display = 'none';
+                 }
+            } else {
+                console.warn('WebGL is not supported. 3D penguin disabled.');
+                 const penguinCanvasElement = document.getElementById('penguin-canvas');
+                 if (penguinCanvasElement) penguinCanvasElement.style.display = 'none';
+            }
+         });
+
+    </script>
+
+</body>
+</html>
